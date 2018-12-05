@@ -87,6 +87,18 @@ const l10n = {
         'your wallets first',
       yesButton: 'OK',
     },
+    enableFingerprintsFirst: {
+      title: 'Action failed',
+      message:
+        'You need to enable biometrics in your device first in order ' +
+        'to be able link it with this app',
+      yesButton: 'OK',
+    },
+    wrongPinError: {
+      title: 'Invalid PIN',
+      message: 'PIN is incorrect.',
+      yesButton: 'OK',
+    },
   },
   LanguageSelectionScreen: {
     languages,
