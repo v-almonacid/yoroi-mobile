@@ -38,6 +38,7 @@ import {ROOT_ROUTES} from './RoutesList'
 
 import {type Dispatch} from 'redux'
 import {type State} from './state'
+import KeyStore from './crypto/KeyStore';
 
 
 export const setAppSettingField = (fieldName: AppSettingsKey, value: any) => (
@@ -176,7 +177,8 @@ export const initApp = () => async (dispatch: Dispatch<any>, getState: any) => {
   await dispatch(reloadAppSettings())
 
   const state = getState()
-  if (!installationIdSelector(state)) {
+  const installationId = installationIdSelector(state)
+  if (!installationId) {
     dispatch(firstRunSetup())
   }
 
@@ -193,6 +195,17 @@ export const initApp = () => async (dispatch: Dispatch<any>, getState: any) => {
 
   await walletManager.initialize()
   await dispatch(updateWallets())
+
+  if (canFingerprintEncryptionBeEnabled() && systemAuthSupportSelector(state)) {
+    // On android 6 signin keys can get invalidated,
+    // if that happen we want to regenerate them
+    if (installationId) {
+      const isKeyValid = await KeyStore.isKeyValid(installationId, 'BIOMETRICS')
+      if (!isKeyValid) {
+        recreateAppSignInKeys(installationId)
+      }
+    }
+  }
 
   dispatch({
     path: ['isAppInitialized'],
