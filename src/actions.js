@@ -38,8 +38,7 @@ import {ROOT_ROUTES} from './RoutesList'
 
 import {type Dispatch} from 'redux'
 import {type State} from './state'
-import KeyStore from './crypto/KeyStore';
-
+import KeyStore from './crypto/KeyStore'
 
 export const setAppSettingField = (fieldName: AppSettingsKey, value: any) => (
   dispatch: Dispatch<any>,

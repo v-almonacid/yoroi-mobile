@@ -572,7 +572,8 @@ class WalletManager {
         // On android 8.0 we are able to delete keys
         // after re-enabling Lock screen
         if (
-          error.code === KeyStore.REJECTIONS.KEY_NOT_DELETED && !isDeviceSecure
+          error.code === KeyStore.REJECTIONS.KEY_NOT_DELETED &&
+          !isDeviceSecure
         ) {
           await showErrorDialog((dialogs) => dialogs.enableSystemAuthFirst)
           await this.closeWallet()
