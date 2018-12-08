@@ -265,9 +265,6 @@ class KeyStore {
     CANCELED: KeyStore._getRejectionMessage('CANCELED'),
     FAILED: KeyStore._getRejectionMessage('FAILED'),
     SWAPPED_TO_FALLBACK: KeyStore._getRejectionMessage('SWAPPED_TO_FALLBACK'),
-    BIOMETRIC_PROMPT_CANCELED: KeyStore._getRejectionMessage(
-      'BIOMETRIC_PROMPT_CANCELED',
-    ),
     INVALID_KEY: KeyStore._getRejectionMessage('INVALID_KEY'),
     KEY_NOT_DELETED: KeyStore._getRejectionMessage('KEY_NOT_DELETED'),
     KEY_NOT_CREATED: KeyStore._getRejectionMessage('KEY_NOT_CREATED'),

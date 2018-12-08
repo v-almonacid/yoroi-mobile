@@ -23,13 +23,11 @@ public final class Rejections {
     public static final String CANCELED = "CANCELED";
     public static final String FAILED = "FAILED";
 
-    public static final String BIOMETRIC_PROMPT_CANCELED = "BIOMETRIC_PROMPT_CANCELED";
     public static final String INVALID_KEY = "INVALID_KEY";
     public static final String SWAPPED_TO_FALLBACK = "SWAPPED_TO_FALLBACK";
 
     // deleteAndroidKeyStoreAsymmetricKeyPair
     public static final String KEY_NOT_DELETED = "KEY_NOT_DELETED";
-
     public static final String KEY_NOT_CREATED = "KEY_NOT_CREATED";
 
     private Rejections() { }
@@ -45,7 +43,6 @@ public final class Rejections {
         map.put(FAILED_UNKNOWN_ERROR, FAILED_UNKNOWN_ERROR);
         map.put(CANCELED, CANCELED);
         map.put(FAILED, FAILED);
-        map.put(BIOMETRIC_PROMPT_CANCELED, BIOMETRIC_PROMPT_CANCELED);
         map.put(INVALID_KEY, INVALID_KEY);
         map.put(KEY_NOT_DELETED, KEY_NOT_DELETED);
         map.put(SWAPPED_TO_FALLBACK, SWAPPED_TO_FALLBACK);

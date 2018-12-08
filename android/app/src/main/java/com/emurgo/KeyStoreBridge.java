@@ -314,9 +314,9 @@ public class KeyStoreBridge extends ReactContextBaseJavaModule {
                     BiometricPrompt.CryptoObject cipher = result.getCryptoObject();
                     try {
                         String decodedText = crypto.decryptData(data, cipher.getCipher());
-                        promise.resolve(decodedText);
+                        fingerprintConfirmationPromise.resolve(decodedText);
                     } catch (Exception e) {
-                        promise.reject(Rejections.DECRYPTION_FAILED, Rejections.DECRYPTION_FAILED, e);
+                        fingerprintConfirmationPromise.reject(Rejections.DECRYPTION_FAILED, Rejections.DECRYPTION_FAILED, e);
                     } finally {
                         fingerprintCancellation.cancel();
                         fingerprintConfirmationPromise = null;
@@ -337,9 +337,12 @@ public class KeyStoreBridge extends ReactContextBaseJavaModule {
                     fingerprintCancellation.cancel();
                 }
 
+                if (errorCode == BiometricPrompt.BIOMETRIC_ERROR_LOCKOUT || errorCode == BiometricPrompt.BIOMETRIC_ERROR_LOCKOUT_PERMANENT) {
+                    fingerprintConfirmationPromise.reject(Rejections.SENSOR_LOCKOUT, Rejections.SENSOR_LOCKOUT);
+                } else {
+                    fingerprintConfirmationPromise.reject(Rejections.FAILED_UNKNOWN_ERROR, Rejections.FAILED_UNKNOWN_ERROR);
+                }
 
-                fingerprintCancellation.cancel();
-                promise.reject(Rejections.NOT_RECOGNIZED, Rejections.NOT_RECOGNIZED);
                 fingerprintConfirmationPromise = null;
             }
         };
@@ -352,7 +355,7 @@ public class KeyStoreBridge extends ReactContextBaseJavaModule {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         fingerprintCancellation.cancel();
-                        promise.reject(Rejections.BIOMETRIC_PROMPT_CANCELED, Rejections.BIOMETRIC_PROMPT_CANCELED);
+                        promise.reject(Rejections.CANCELED, Rejections.CANCELED);
                         fingerprintConfirmationPromise = null;
                     }
                 })
