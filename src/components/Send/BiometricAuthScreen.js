@@ -119,11 +119,11 @@ export default (compose(
   ),
   withHandlers({
     cancelScanning: ({setError, clearError, navigation}) => async () => {
-      const wasAlreadyCanceled = !(await KeyStore.cancelFingerprintScanning(
+      const wasScanningStarted = await KeyStore.cancelFingerprintScanning(
         KeyStore.REJECTIONS.CANCELED,
-      ))
+      )
 
-      if (wasAlreadyCanceled) {
+      if (!wasScanningStarted) {
         clearError()
         navigation.getParam('onFail')(KeyStore.REJECTIONS.CANCELED)
       }

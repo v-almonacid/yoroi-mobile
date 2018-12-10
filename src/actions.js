@@ -40,10 +40,12 @@ import {type Dispatch} from 'redux'
 import {type State} from './state'
 import KeyStore from './crypto/KeyStore'
 
-export const setAppSettingField = (fieldName: AppSettingsKey, value: any) => (
-  dispatch: Dispatch<any>,
-) => {
-  writeAppSettings(fieldName, value)
+export const setAppSettingField = (
+  fieldName: AppSettingsKey,
+  value: any,
+) => async (dispatch: Dispatch<any>) => {
+  await writeAppSettings(fieldName, value)
+
   dispatch({
     path: ['appSettings', fieldName],
     payload: value,
@@ -108,8 +110,11 @@ export const encryptAndStoreCustomPin = (pin: string) => async (
   if (!installationId) {
     throw new AppSettingsError(APP_SETTINGS_KEYS.INSTALLATION_ID)
   }
+
   const customPinHash = await encryptCustomPin(installationId, pin)
-  dispatch(setAppSettingField(APP_SETTINGS_KEYS.CUSTOM_PIN_HASH, customPinHash))
+  await dispatch(
+    setAppSettingField(APP_SETTINGS_KEYS.CUSTOM_PIN_HASH, customPinHash),
+  )
 }
 
 export const removeCustomPin = () => async (
@@ -151,15 +156,26 @@ export const navigateFromSplash = () => (
   }
 }
 
-export const acceptAndSaveTos = () => (dispatch: Dispatch<any>) => {
-  dispatch(setAppSettingField(APP_SETTINGS_KEYS.ACCEPTED_TOS, true))
+export const acceptAndSaveTos = () => async (dispatch: Dispatch<any>) => {
+  await dispatch(setAppSettingField(APP_SETTINGS_KEYS.ACCEPTED_TOS, true))
 }
 
-const firstRunSetup = () => (dispatch: Dispatch<any>, getState: any) => {
-  const installationId = uuid.v4()
-  dispatch(
+const initInstallationId = () => async (
+  dispatch: Dispatch<any>,
+  getState: any,
+): Promise<string> => {
+  let installationId = installationIdSelector(getState())
+  if (installationId) {
+    return installationId
+  }
+
+  installationId = uuid.v4()
+
+  await dispatch(
     setAppSettingField(APP_SETTINGS_KEYS.INSTALLATION_ID, installationId),
   )
+
+  return installationId
 }
 
 export const closeWallet = () => async (dispatch: Dispatch<any>) => {
@@ -175,17 +191,14 @@ export const logout = () => async (dispatch: Dispatch<any>) => {
 export const initApp = () => async (dispatch: Dispatch<any>, getState: any) => {
   await dispatch(reloadAppSettings())
 
+  const installationId = await dispatch(initInstallationId())
   const state = getState()
-  const installationId = installationIdSelector(state)
-  if (!installationId) {
-    dispatch(firstRunSetup())
-  }
 
   // prettier-ignore
   const hasEnrolledFingerprints =
     await canFingerprintEncryptionBeEnabled()
 
-  dispatch(
+  await dispatch(
     setAppSettingField(
       APP_SETTINGS_KEYS.HAS_FINGERPRINTS_ENROLLED,
       hasEnrolledFingerprints,
@@ -198,11 +211,9 @@ export const initApp = () => async (dispatch: Dispatch<any>, getState: any) => {
   if (hasEnrolledFingerprints && systemAuthSupportSelector(state)) {
     // On android 6 signin keys can get invalidated,
     // if that happen we want to regenerate them
-    if (installationId) {
-      const isKeyValid = await KeyStore.isKeyValid(installationId, 'BIOMETRICS')
-      if (!isKeyValid) {
-        await recreateAppSignInKeys(installationId)
-      }
+    const isKeyValid = await KeyStore.isKeyValid(installationId, 'BIOMETRICS')
+    if (!isKeyValid) {
+      await recreateAppSignInKeys(installationId)
     }
   }
 
@@ -354,7 +365,9 @@ export const setSystemAuth = (enable: boolean) => async (
     )
   }
 
-  dispatch(setAppSettingField(APP_SETTINGS_KEYS.SYSTEM_AUTH_ENABLED, enable))
+  await dispatch(
+    setAppSettingField(APP_SETTINGS_KEYS.SYSTEM_AUTH_ENABLED, enable),
+  )
 
   const installationId = installationIdSelector(getState())
   if (!installationId) {

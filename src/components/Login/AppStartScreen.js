@@ -50,8 +50,7 @@ const AppStartScreen = ({navigateLogin, translations}) => (
 
 const onFail = (navigation, installationId) => async (reason) => {
   if (reason === KeyStore.REJECTIONS.INVALID_KEY) {
-    const hasEnrolledFingerprints = await canFingerprintEncryptionBeEnabled()
-    if (hasEnrolledFingerprints) {
+    if (await canFingerprintEncryptionBeEnabled()) {
       recreateAppSignInKeys(installationId)
     } else {
       await showErrorDialog((dialogs) => dialogs.biometricsIsTurnedOff)
@@ -75,10 +74,7 @@ export default compose(
       installationId,
     }) => async () => {
       if (isSystemAuthEnabled) {
-        // prettier-ignore
-        const hasEnrolledFingerprints =
-          await canFingerprintEncryptionBeEnabled()
-        if (hasEnrolledFingerprints) {
+        if (await canFingerprintEncryptionBeEnabled()) {
           navigation.navigate(ROOT_ROUTES.BIO_AUTH, {
             keyId: installationId,
             onSuccess: () =>

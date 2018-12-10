@@ -732,15 +732,17 @@ class WalletManager {
 
   async enableEasyConfirmation(masterPassword: string) {
     if (!this._id) throw new WalletClosed()
+    if (!this._wallet) throw new WalletClosed()
+
     const id = this._id
+    const wallet = this._wallet
 
     await this._updateMetadata(id, {
       isEasyConfirmationEnabled: true,
     })
 
-    // $FlowFixMe
-    await this._wallet.enableEasyConfirmation(masterPassword)
-    await this._saveState()
+    await wallet.enableEasyConfirmation(masterPassword)
+    await this._saveState(wallet)
   }
 
   async changePassword(masterPassword: string, newPassword: string) {

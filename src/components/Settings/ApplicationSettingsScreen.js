@@ -97,11 +97,11 @@ const updateDeviceSettings = async ({setAppSettingField}) => {
   const hasEnrolledFingerprints =
     await canFingerprintEncryptionBeEnabled()
 
-  setAppSettingField(
+  await setAppSettingField(
     APP_SETTINGS_KEYS.FINGERPRINT_HW_SUPPORT,
     isHardwareSupported,
   )
-  setAppSettingField(
+  await setAppSettingField(
     APP_SETTINGS_KEYS.HAS_FINGERPRINTS_ENROLLED,
     hasEnrolledFingerprints,
   )
