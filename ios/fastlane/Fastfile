@@ -44,8 +44,6 @@ platform :ios do
 
   desc "Builds the project. Useful to verify a succesful compilation."
   lane :bitrise_build do
-    get_certificates()           # invokes cert
-    get_provisioning_profile(provisioning_name: "com.emurgo.yoroi AppStore", cert_id: "HPC5U2RRJZ")   # invokes sigh
     build_app(
       workspace: "emurgo.xcworkspace", 
       scheme: "emurgo", 
