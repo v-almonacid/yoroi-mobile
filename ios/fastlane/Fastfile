@@ -20,7 +20,6 @@ platform :ios do
   lane :beta do
     get_certificates           # invokes cert
     get_provisioning_profile   # invokes sigh
-    build_app(workspace: "emurgo.xcworkspace", scheme: "emurgo")
     increment_build_number(xcodeproj: "emurgo.xcodeproj")
     build_app(workspace: "emurgo.xcworkspace", scheme: "emurgo")
     upload_to_testflight(skip_submission: true)
@@ -28,8 +27,35 @@ platform :ios do
 
   desc "Builds the project. Useful to verify a succesful compilation."
   lane :build do
-    get_certificates           # invokes cert
-    get_provisioning_profile   # invokes sigh
-    build_app(workspace: "emurgo.xcworkspace", scheme: "emurgo")
+    get_certificates()           # invokes cert
+    get_provisioning_profile(provisioning_name: "com.emurgo.yoroi AppStore", cert_id: "HPC5U2RRJZ")   # invokes sigh
+    build_app(
+      workspace: "emurgo.xcworkspace", 
+      scheme: "emurgo", 
+      export_options: {
+        "provisioningProfiles": {
+          "com.emurgo.yoroi": "com.emurgo.yoroi AppStore"
+        },
+        "method": "app-store",
+        "signingStyle": "manual"
+      }
+    )
+  end
+
+  desc "Builds the project. Useful to verify a succesful compilation."
+  lane :bitrise_build do
+    get_certificates()           # invokes cert
+    get_provisioning_profile(provisioning_name: "com.emurgo.yoroi AppStore", cert_id: "HPC5U2RRJZ")   # invokes sigh
+    build_app(
+      workspace: "emurgo.xcworkspace", 
+      scheme: "emurgo", 
+      export_options: {
+        "provisioningProfiles": {
+          "com.emurgo.yoroi": "com.emurgo.yoroi AppStore"
+        },
+        "method": "app-store",
+        "signingStyle": "manual"
+      }
+    )
   end
 end
